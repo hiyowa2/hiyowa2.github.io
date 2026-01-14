@@ -3,9 +3,12 @@
 <!DOCTYPE html>
 <html>
   <body>
+    <style>
+      h1 {
+        color: red;
+      }
+    </style>
+
     <h1>ssss</h1>
   </body>
 </html>
-
-<h1 style="color: red;">ssss</h1>
-
