@@ -1,9 +1,8 @@
 # hiyowa2.github.io
 
-</html>
- </boby>
-   </h1>
-    ssss
-   </h1>
-  </boby>
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>ssss</h1>
+  </body>
 </html>
