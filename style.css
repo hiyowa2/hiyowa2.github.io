@@ -1,9 +1,22 @@
-.scp-class {
-  background: linear-gradient(135deg, #1aa3ff, #ff0033);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+body {
+  background: #050505;
+  color: #e0e0e0;
+  font-family: "Segoe UI", sans-serif;
+}
 
-  font-size: 22px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.file-bar {
+  background: #b3002d;
+  text-align: center;
+  font-weight: bold;
+  padding: 12px;
+  margin: 20px 0;
+}
+
+.scp-info h1 {
+  font-size: 32px;
+}
+
+.level span {
+  font-size: 14px;
+  color: #ff4444;
 }
