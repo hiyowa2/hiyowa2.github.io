@@ -1,14 +1,9 @@
 .scp-class {
-  font-size: 48px;
-  font-weight: bold;
-
-  background: linear-gradient(
-    135deg,
-    blue 0%,
-    purple 50%,
-    red 100%
-  );
-
+  background: linear-gradient(135deg, #1aa3ff, #ff0033);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
