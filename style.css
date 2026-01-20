@@ -82,3 +82,17 @@ background: linear-gradient(117deg, rgb(0, 162, 255) 51%, rgb(107, 0, 0) 50%);
   opacity: 0.9;
 }
 
+
+
+.bg {
+  background-color: #222;
+  width: 100%;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+body {
+  font-family: "Meiryo", "メイリオ", sans-serif;
+}
