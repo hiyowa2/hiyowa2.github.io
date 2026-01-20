@@ -1,4 +1,84 @@
-.gra {
-    background: #00b7ff;
-background: linear-gradient(152deg, rgba(0, 183, 255, 1) 52%, rgba(144, 0, 0, 1) 51%);
+
+
+.c {
+  text-align: center;
+  place-items: center;
 }
+
+.red {
+  color:maroon;
+}
+
+.b-aqua {
+  background-color: aqua;
+}
+
+.border-inset-lightblue {
+  border:5px inset lightblue
+}
+
+.b-outset-lightblue {
+   border:5px outset lightblue
+}
+
+.b-outset-maroon {
+   border:1px dashed maroon
+}
+
+.g-red_blue {
+  background: #5957c7;
+background: linear-gradient(117deg, rgb(0, 162, 255) 51%, rgb(107, 0, 0) 50%);
+}
+
+.blue{
+  color:lightblue;
+}
+
+.v {
+  background-color: rgb(0, 255, 255);
+  border :2px double maroon;
+}
+
+.site-header {
+  background-color: #222;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  color: white;
+  font-size: 24px;
+}
+
+.site-header {
+  background: #222;
+  padding: 16px;
+}
+.note {
+  border-left: 0.5px solid #555;
+  padding-left: 15px;
+  background-color: aqua;
+}
+
+.noste {
+  border-left: 2px solid #555;
+  padding-left: 15px;
+  background-color: maroon;
+}
+
+.class-box {
+  border-left: 3px solid #888;
+  padding-left: 12px;
+}
+
+.main {
+  font-weight: bold;
+}
+
+.sub {
+  margin-top: 8px;
+  opacity: 0.9;
+}
+
