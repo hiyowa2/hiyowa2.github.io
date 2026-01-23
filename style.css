@@ -22,20 +22,14 @@
   background: rgb(54, 0, 0);
   width: 80%;
   height: 100rem;
-  max-width:40rem;
+  max-width: 40rem;
+  
 }
 html, body {
   background: black;
   margin: 0;
   height: 100%;
-  font-family:
-    "Noto Sans JP",
-    "Hiragino Kaku Gothic ProN",
-    "Yu Gothic",
-    "Meiryo",
-    sans-serif;
 }
-
 .let1-1{
   color: black;
   display: inline-block;
@@ -46,8 +40,24 @@ html, body {
   position: relative;
   top:3rem
 }
+body {
+  font-family:
+    "Noto Sans JP",
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
+}
 
-
-
-
-
+.back2{
+  display: inline-block;
+  transform: translate(0rem,3rem);
+  background: rgb(54, 0, 0);
+  width: 80%;
+  height: 100rem;
+  max-width: 40rem;
+  
+}
+::selection {
+  background: darkred;
+}
