@@ -22,7 +22,7 @@
   background: rgb(54, 0, 0);
   width: 80%;
   height: 100rem;
-  
+  max-width:40rem;
 }
 html, body {
   background: black;
@@ -39,5 +39,6 @@ html, body {
   position: relative;
   top:3rem
 }
+
 
 
