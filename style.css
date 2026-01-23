@@ -28,6 +28,8 @@ html, body {
   background: black;
   margin: 0;
   height: 100%;
+  font-family: sans-serif;
+
 }
 .let1-1{
   color: black;
@@ -39,6 +41,7 @@ html, body {
   position: relative;
   top:3rem
 }
+
 
 
 
