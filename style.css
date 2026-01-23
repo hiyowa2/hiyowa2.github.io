@@ -28,9 +28,14 @@ html, body {
   background: black;
   margin: 0;
   height: 100%;
-  font-family: sans-serif;
-
+  font-family:
+    "Noto Sans JP",
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
 }
+
 .let1-1{
   color: black;
   display: inline-block;
@@ -41,6 +46,7 @@ html, body {
   position: relative;
   top:3rem
 }
+
 
 
 
