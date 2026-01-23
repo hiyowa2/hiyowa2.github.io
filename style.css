@@ -33,6 +33,7 @@ html, body {
 .let1-1{
   color: black;
   display: inline-block;
+  
  
 }
 .let2{
@@ -60,4 +61,6 @@ body {
 }
 ::selection {
   background: darkred;
+  color:white;
 }
+
