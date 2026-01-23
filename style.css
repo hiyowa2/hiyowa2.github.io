@@ -1,10 +1,41 @@
 .center{
   text-align: center;
+  color: white;
+
 }
 
-.back{
-  background: linear-gradient(100deg,rgba(255, 0, 0, 0.5)50%,rgb(120, 205, 255,0.5)50%);
+.back1{
+  background:rgb(120, 205, 255,0.5)20%;
+  display: block;
+  height: 3rem;
+  border:0.25rem inset rgba(85, 0, 0, 0.527);
+  
+}
+.let1{
   display: inline-block;
-  width: 100%;
+  transform:translate(0rem,0.75rem) ;
+}
 
+.back2{
+  display: inline-block;
+  transform: translate(0rem,3rem);
+  background: rgb(54, 0, 0);
+  width: 40rem;
+  height: 100rem;
+  
+}
+html, body {
+  background: black;
+  margin: 0;
+  height: 100%;
+}
+.let1-1{
+  color: black;
+  display: inline-block;
+ 
+}
+.let2{
+  display: inline-block;
+  position: relative;
+  top:3rem
 }
