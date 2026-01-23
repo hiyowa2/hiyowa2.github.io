@@ -20,7 +20,7 @@
   display: inline-block;
   transform: translate(0rem,3rem);
   background: rgb(54, 0, 0);
-  width: 100%;
+  width: 80%;
   height: 100rem;
   
 }
@@ -39,4 +39,5 @@ html, body {
   position: relative;
   top:3rem
 }
+
 
