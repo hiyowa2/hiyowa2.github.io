@@ -93,6 +93,14 @@ html,body {
 
 @media (max-width: 600px) {
   /* スマホだけ変えたいやつ */
+
+
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 14px;
+  }
 }
 
 
