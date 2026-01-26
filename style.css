@@ -17,7 +17,8 @@ body,html{
   color: white;
 }
 .file1{
-  background-color: rgb(0, 132, 255);
+  background-color: rgb(40, 134, 197);
+  height: 3.5rem;
 }
 .black{
   color:black;
@@ -44,6 +45,9 @@ body,html{
 }
 .big1{
   font-size: 1.5rem;
+  display: inline-block;
+  margin-top: 0.5rem;
+  text-align: center;
 }
 
 .level4-all{
@@ -59,14 +63,15 @@ body,html{
 .level4-let-2{
   display: flex;
   margin-left:86%;
-  margin-top: -3rem;
+  margin-top: -3.4rem;
 }
 .hr{
   background-color: rgb(66, 66, 66);
-  display: flex;
+  display: block;
   height: 0.5rem;
-  margin-bottom: 0.rem;
+  transform: translate(0rem,-1rem);
 }
+
 
 }
 body {
@@ -85,5 +90,6 @@ body {
   background: darkred;
   color:white;
 }
+
 
 
