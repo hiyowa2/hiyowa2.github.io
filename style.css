@@ -104,6 +104,9 @@ html,body {
 }
 
 
+html,body{
+font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+}
 
 
 
