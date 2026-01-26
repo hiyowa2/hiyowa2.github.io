@@ -14,7 +14,7 @@
 }
 body,html{
   background-color: rgb(9, 0, 0);
-  color: white;
+  color: color: rgb(179, 179, 179);;
 }
 .file1{
   background-color: rgb(40, 134, 197);
@@ -90,6 +90,7 @@ body {
   background: maroon;
   color:white;
 }
+
 
 
 
