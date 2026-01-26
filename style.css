@@ -87,9 +87,10 @@ body {
   
 }
 ::selection {
-  background: darkred;
+  background: maroon;
   color:white;
 }
+
 
 
 
