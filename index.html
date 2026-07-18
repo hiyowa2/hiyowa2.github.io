@@ -1,52 +1,992 @@
+al_game_design.html
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-<div class="center">
- 
-  <div>
-    <div class="file1">
-      <div class="black">
-         <spa class="big1">
-        <b>
-          FILE 1/2
-        </b>
-         </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨大数インクリメンタルゲーム設計書</title>
+<style>
+  :root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #16213e;
+    --bg-hover: #252540;
+    --text-primary: #e0e0ff;
+    --text-secondary: #a0a0c0;
+    --text-tertiary: #707090;
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --accent-tertiary: #ec4899;
+    --border-subtle: rgba(255,255,255,0.06);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --font-sans: "Segoe UI", "Hiragino Sans", "Meiryo", sans-serif;
+    --font-mono: "Consolas", "Monaco", "Courier New", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-tertiary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin: 24px 0 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tab {
+    padding: 10px 18px;
+    border: none;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.25s;
+    border: 1px solid var(--border-subtle);
+  }
+  .tab:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+    border-color: transparent;
+  }
+  .panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .panel.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stage Flow */
+  .stage-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+  .stage-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--accent-primary);
+    transition: all 0.2s;
+  }
+  .stage-row:hover {
+    background: var(--bg-hover);
+    transform: translateX(4px);
+  }
+  .stage-num {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--accent-primary);
+    min-width: 36px;
+    text-align: center;
+  }
+  .stage-info { flex: 1; }
+  .stage-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 3px;
+  }
+  .stage-range {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+  }
+  .arrow {
+    text-align: center;
+    color: var(--accent-secondary);
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 4px 0;
+    opacity: 0.6;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: var(--bg-secondary);
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s;
+  }
+  .card:hover {
+    border-color: rgba(99,102,241,0.3);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-body {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .mechanic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .mechanic-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+  .mechanic-list li:last-child { border-bottom: none; }
+  .mechanic-list li::before {
+    content: "▸ ";
+    color: var(--accent-primary);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .badge-merit {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+  }
+  .badge-demerit {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+  }
+  .badge-info {
+    background: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+  }
+
+  /* Scale Bar */
+  .scale-section {
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+  }
+  .scale-bar {
+    height: 32px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary), #f43f5e);
+    border-radius: var(--radius-sm);
+    margin: 12px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .scale-bar::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 19%, rgba(255,255,255,0.1) 20%);
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  /* God System */
+  .god-table {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .god-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.15s;
+  }
+  .god-row:hover { background: var(--bg-hover); }
+  .god-row:last-child { border-bottom: none; }
+  .god-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .god-info { flex: 1; min-width: 0; }
+  .god-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+  .god-domain {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+
+  /* Milestones */
+  .milestone-track {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  .milestone {
+    min-width: 110px;
+    padding: 14px 10px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s;
+  }
+  .milestone:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+  }
+  .milestone-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+  }
+  .milestone-reward {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* Heaven & Hell */
+  .hh-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .hh-section {
+    background: var(--bg-secondary);
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+  }
+  .hh-section h4 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hh-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .hh-item:last-child { border-bottom: none; }
+  .hh-reward {
+    font-weight: 700;
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+  }
+  .hh-total {
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  /* Issues */
+  .issue-card {
+    background: rgba(245, 158, 11, 0.05);
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .issue-card:hover {
+    background: rgba(245, 158, 11, 0.08);
+    transform: translateX(4px);
+  }
+  .issue-card strong {
+    color: #fbbf24;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .issue-card p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+  .issue-card em {
+    color: #fcd34d;
+    font-size: 0.82rem;
+    font-style: normal;
+    display: block;
+    padding: 6px 10px;
+    background: rgba(245, 158, 11, 0.08);
+    border-radius: var(--radius-sm);
+    margin-top: 6px;
+  }
+
+  /* Space */
+  .space-card {
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(99,102,241,0.05));
+    border: 1px solid rgba(99,102,241,0.2);
+  }
+  .formula-box {
+    background: var(--bg-primary);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent-primary);
+    margin: 10px 0;
+    border: 1px solid var(--border-subtle);
+    overflow-x: auto;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 28px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.4rem; }
+    .stage-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .hh-grid { grid-template-columns: 1fr; }
+    .tabs { justify-content: flex-start; }
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="header">
+  <h1>🎮 巨大数インクリメンタルゲーム設計書</h1>
+  <p>テトリス → 巨大数 → 言語 → 神話 → 対数 → 宇宙</p>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview', this)">全体構成</button>
+    <button class="tab" onclick="switchTab('stages', this)">ステージ詳細</button>
+    <button class="tab" onclick="switchTab('gods', this)">神システム</button>
+    <button class="tab" onclick="switchTab('heavenhell', this)">天国と地獄</button>
+    <button class="tab" onclick="switchTab('space', this)">スペース</button>
+    <button class="tab" onclick="switchTab('issues', this)">設計課題</button>
+  </div>
+
+  <!-- Overview -->
+  <div id="overview" class="panel active">
+    <div class="stage-flow">
+      <div class="stage-row">
+        <div class="stage-num">1</div>
+        <div class="stage-info">
+          <div class="stage-name">🎲 テトリス</div>
+          <div class="stage-range">Score: 10⁰ → 10^(10⁹)</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="stage-row">
+        <div class="stage-num">2</div>
+        <div class="stage-info">
+          <div class="stage-name">⬆️ TL (Transcendence Level)</div>
+          <div class="stage-range">10^(10⁹) → 10^(6.66×10¹⁶)</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="stage-row">
+        <div class="stage-num">3</div>
+        <div class="stage-info">
+          <div class="stage-name">💫 SR / SL</div>
+          <div class="stage-range">10^(6.66×10¹⁶) → 10^(10²⁰)</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="stage-row">
+        <div class="stage-num">4</div>
+        <div class="stage-info">
+          <div class="stage-name">💻 言語システム → 🏛️ 神システム</div>
+          <div class="stage-range">Python/Swift/C... → オリュンポス12神 × 60試練</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="stage-row">
+        <div class="stage-num">5</div>
+        <div class="stage-info">
+          <div class="stage-name">☁️🔥 天国と地獄</div>
+          <div class="stage-range">対数操作層: log₁₀ → 5重log₁₀ / log₁₀₀ → 5重log₁₀₀</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="stage-row">
+        <div class="stage-num">6</div>
+        <div class="stage-info">
+          <div class="stage-name">🌌 スペース（宇宙試練）</div>
+          <div class="stage-range">10^(10^(10¹⁵)) → ∞ | 熱的死・物理法則操作</div>
+        </div>
       </div>
     </div>
-  <div class="left">
-   <div>
-    <h1>
-      SCP-6820
-    </h1>
+
+    <div class="scale-section">
+      <div class="card-title">📊 数値スケールの可視化</div>
+      <div class="scale-bar"></div>
+      <div class="scale-labels">
+        <span>10⁰</span>
+        <span>10^(10⁹)</span>
+        <span>10^(10¹⁶)</span>
+        <span>10^(10²⁰)</span>
+        <span>10^(10^(10¹⁵))</span>
+      </div>
+    </div>
   </div>
-  <div class="level4-all">
-    <span class="level4-1"></span>
-    <span class="level4-2"></span>
-    <span class="level4-2"></span>
-    <span class="level4-1"></span>
+
+  <!-- Stages Detail -->
+  <div id="stages" class="panel">
+    <div class="section-title">🎲 ステージ1: テトリス</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">基本メカニクス</div>
+        <ul class="mechanic-list">
+          <li>1ライン消去: スコア増加量 × 1.5</li>
+          <li>4ライン同時消去（テトリス）: 指数補正適用</li>
+          <li>コンボ継続: 連鎖ボーナス累積</li>
+          <li>パーフェクトクリア: 追加倍率</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">TL解放条件</div>
+        <div class="card-body">
+          <p>必要スコア: <strong>10^(10⁹)</strong></p>
+          <p style="margin-top:8px; color:var(--text-tertiary); font-size:0.8rem;">
+            純粋テトリスでは到達不可能なため、ステージ1内にプリステージ要素（コンボ倍率・連鎖ボーナス・パーフェクトクリア報酬）が必要。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">⬆️ ステージ2: TL (Transcendence Level)</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">基本情報</div>
+        <ul class="mechanic-list">
+          <li>1TL = 10^(10⁹) Score</li>
+          <li>獲得式: TL/sec = 精度 × 倍率 × (TL^指数)</li>
+          <li>解放条件: 10TL で倍率解放、100TL で指数解放</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">精度アップグレード</div>
+        <ul class="mechanic-list">
+          <li>初期: 1%</li>
+          <li>1Lvごと: +1%</li>
+          <li>コスト: 1.075ⁿ TL</li>
+          <li>Lv100到達で 100%精度</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">倍率アップグレード</div>
+        <ul class="mechanic-list">
+          <li>解放: 10TL</li>
+          <li>コスト: 20^(1.03ⁿ) TL</li>
+          <li>基数スコア倍率+1/Lv</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">指数アップグレード ⚠️</div>
+        <ul class="mechanic-list">
+          <li>解放: 100TL</li>
+          <li>効果: +^0.05/Lv</li>
+          <li>コスト: 100 × 1.01ⁿ TL</li>
+          <li>Lv100で指数 = 6.0 → TL⁶成長</li>
+        </ul>
+        <p style="margin-top:8px; color:#f87171; font-size:0.8rem;">
+          ⚠️ dTL/dt ∝ TL⁶ は有限時間で発散（特異点）。ソフトキャップの導入を推奨。
+        </p>
+      </div>
+    </div>
+
+    <div class="section-title">💫 ステージ3: SR / SL</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">SR (Soul Rebirth)</div>
+        <ul class="mechanic-list">
+          <li>周回通貨</li>
+          <li>1SRごと: スコア倍率基数+1</li>
+          <li>1SRごと: 獲得指数+^0.5</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">SL (Soul Light)</div>
+        <ul class="mechanic-list">
+          <li>消費通貨</li>
+          <li>1SRごと: SL倍率×1.25</li>
+          <li>SL獲得指数アップグレード可能</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">SL獲得指数</div>
+        <ul class="mechanic-list">
+          <li>コスト: 10 × (Lv × 2^(0.5n))</li>
+          <li>効果: +^0.1</li>
+          <li>次の目標: 1.99 × 10^(10²⁰) SL</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-title">💻 言語システム</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">一般言語</div>
+        <ul class="mechanic-list">
+          <li><strong>Python:</strong> 自動化+1/sec</li>
+          <li><strong>Swift:</strong> クリティカル率+5%</li>
+          <li><strong>C:</strong> ベース計算効率×2</li>
+          <li><strong>C#:</strong> オブジェクト指向複合ボーナス</li>
+          <li><strong>Java:</strong> VM効率で全指数+^0.01</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Esolang（後半解放）</div>
+        <ul class="mechanic-list">
+          <li><strong>Brainfuck:</strong> メモリ操作でランダム倍率</li>
+          <li><strong>Befunge:</strong> 2D方向で複数リソース同時獲得</li>
+          <li><strong>Malbolge:</strong> 自己改変で指数が時間と共に成長</li>
+        </ul>
+      </div>
+    </div>
   </div>
-  <span class="level4-let-1">
-    <h1>レベル4</h1>
-  </span>
-  <span class="level4-let-2">
-    <h4>SEACLET</h4>
-  </span>
-  <div class="hr"></div>
+
+  <!-- Gods -->
+  <div id="gods" class="panel">
+    <div class="section-title">🏛️ オリュンポス12神</div>
+    <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:16px;">
+      各神は<span class="badge badge-merit">メリット</span>と<span class="badge badge-demerit">デメリット</span>を持つ。相性が悪い神を同時選択すると、強化効果が反転する。
+    </p>
+
+    <div class="god-table">
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">Z</div>
+        <div class="god-info">
+          <div class="god-name">ゼウス <span class="badge badge-merit">全指数+^0.1</span> <span class="badge badge-demerit">速度-^0.2</span></div>
+          <div class="god-domain">天空・雷 | 相性悪: ポセイドン（兄弟対立 -50%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#ec4899,#a855f7);">H</div>
+        <div class="god-info">
+          <div class="god-name">ヘラ <span class="badge badge-merit">倍率+^0.15</span> <span class="badge badge-demerit">コスト+^0.3</span></div>
+          <div class="god-domain">結婚・家庭 | 相性悪: アフロディーテ（嫉妬 -40%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);">P</div>
+        <div class="god-info">
+          <div class="god-name">ポセイドン <span class="badge badge-merit">SR獲得×2</span> <span class="badge badge-demerit">SL獲得÷2</span></div>
+          <div class="god-domain">海・地震 | 相性悪: ゼウス（兄弟対立 -50%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#22c55e,#10b981);">D</div>
+        <div class="god-info">
+          <div class="god-name">デメテル <span class="badge badge-merit">自動生産+^0.5</span> <span class="badge badge-demerit">手動生産-^0.5</span></div>
+          <div class="god-domain">豊穣・農業</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#6366f1,#818cf8);">A</div>
+        <div class="god-info">
+          <div class="god-name">アテナ <span class="badge badge-merit">言語効果×1.5</span> <span class="badge badge-demerit">神試練難易度+^0.4</span></div>
+          <div class="god-domain">知恵・戦術 | 相性悪: アレス（戦術vs暴力 -30%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">Ap</div>
+        <div class="god-info">
+          <div class="god-name">アポロン <span class="badge badge-merit">スコア指数+^0.2</span> <span class="badge badge-demerit">地獄効果-^0.3</span></div>
+          <div class="god-domain">太陽・音楽</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#a855f7,#c084fc);">Ar</div>
+        <div class="god-info">
+          <div class="god-name">アルテミス <span class="badge badge-merit">クリティカル率+10%</span> <span class="badge badge-demerit">通常獲得-^0.1</span></div>
+          <div class="god-domain">狩猟・月</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#dc2626,#ef4444);">Are</div>
+        <div class="god-info">
+          <div class="god-name">アレス <span class="badge badge-merit">試練報酬×2</span> <span class="badge badge-demerit">デメリット^2.5</span></div>
+          <div class="god-domain">戦争 | 相性悪: アテナ（暴力vs戦術 -30%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#f472b6,#ec4899);">Af</div>
+        <div class="god-info">
+          <div class="god-name">アフロディーテ <span class="badge badge-merit">相性ボーナス+^0.3</span> <span class="badge badge-demerit">相性悪化時反転率+20%</span></div>
+          <div class="god-domain">愛・美 | 相性悪: ヘラ（美vs嫉妬 -40%）</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#f97316,#fb923c);">Hp</div>
+        <div class="god-info">
+          <div class="god-name">ヘパイストス <span class="badge badge-merit">アップグレードコスト-^0.2</span> <span class="badge badge-demerit">速度-^0.15</span></div>
+          <div class="god-domain">鍛冶・火</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#14b8a6,#2dd4bf);">He</div>
+        <div class="god-info">
+          <div class="god-name">ヘルメス <span class="badge badge-merit">全通貨獲得+^0.25</span> <span class="badge badge-demerit">ランダム要素増加</span></div>
+          <div class="god-domain">商業・旅</div>
+        </div>
+      </div>
+      <div class="god-row">
+        <div class="god-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">Di</div>
+        <div class="god-info">
+          <div class="god-name">ディオニュソス <span class="badge badge-merit">指数変動±^0.5</span> <span class="badge badge-demerit">安定性-^0.4</span></div>
+          <div class="god-domain">酒・狂気</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">📈 神の試練マイルストーン</div>
+    <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:12px;">
+      12神 × 5レベル = 合計60試練。挑戦中はメリット^0.5、デメリット^2。
+    </p>
+    <div class="milestone-track">
+      <div class="milestone">
+        <div class="milestone-num">1</div>
+        <div class="milestone-reward">2神<br>同時使用</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-num">5</div>
+        <div class="milestone-reward">デメリット<br>基礎軽減</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-num">15</div>
+        <div class="milestone-reward">3神<br>同時使用</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-num">30</div>
+        <div class="milestone-reward">マイルストーン<br>2強化</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-num">45</div>
+        <div class="milestone-reward">5神<br>同時使用</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-num">60</div>
+        <div class="milestone-reward">全神同時使用<br>デメリット撤廃</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Heaven & Hell -->
+  <div id="heavenhell" class="panel">
+    <div class="hh-grid">
+      <div class="hh-section">
+        <h4>☁️ 天国の試練</h4>
+        <p style="font-size:0.8rem; color:var(--text-tertiary); margin-bottom:10px;">
+          スコア獲得量へログ適用。60試練後に解放。
+        </p>
+        <div class="hh-item"><span>天国1: single log₁₀</span><span class="hh-reward">+^1.1</span></div>
+        <div class="hh-item"><span>天国2: double log₁₀</span><span class="hh-reward">+^1.3</span></div>
+        <div class="hh-item"><span>天国3: triple log₁₀</span><span class="hh-reward">+^1.5</span></div>
+        <div class="hh-item"><span>天国4: quadruple log₁₀</span><span class="hh-reward">+^1.7</span></div>
+        <div class="hh-item"><span>天国5: 5重log₁₀</span><span class="hh-reward">+^2.0</span></div>
+        <div class="hh-total">天国報酬合計: <strong>+^7.6</strong></div>
+      </div>
+
+      <div class="hh-section">
+        <h4>🔥 地獄の試練</h4>
+        <p style="font-size:0.8rem; color:var(--text-tertiary); margin-bottom:10px;">
+          ゲーム速度へログ適用。天国と同時進行可能。
+        </p>
+        <div class="hh-item"><span>地獄1: log₁₀₀</span><span class="hh-reward">+^1.1</span></div>
+        <div class="hh-item"><span>地獄2: double log₁₀₀</span><span class="hh-reward">+^1.3</span></div>
+        <div class="hh-item"><span>地獄3: triple log₁₀₀</span><span class="hh-reward">+^1.5</span></div>
+        <div class="hh-item"><span>地獄4: 4重log₁₀₀</span><span class="hh-reward">+^1.7</span></div>
+        <div class="hh-item"><span>地獄5: 5重log₁₀₀</span><span class="hh-reward">+^2.0</span></div>
+        <div class="hh-total">地獄報酬合計: <strong>+^7.6</strong></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">🏅 実績: 天と地</div>
+      <div class="card-body">
+        <p><strong>条件:</strong> 天国1〜5 + 地獄1〜5 を全て制覇</p>
+        <p style="margin-top:8px;"><strong>報酬:</strong> 全ての値へ最低 <span class="badge badge-info">+^1.01</span> を付与（加算処理）</p>
+        <p style="margin-top:8px; color:var(--text-tertiary); font-size:0.8rem;">
+          天国・地獄の報酬は加算で累積される。実績ボーナスは全ステージの全数値に適用。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Space -->
+  <div id="space" class="panel">
+    <div class="section-title">🌌 スペース: 宇宙の試練</div>
+    <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:16px;">
+      「天と地」実績達成後に解放。テーマは「宇宙の誕生から終焉まで」。
+    </p>
+
+    <div class="card-grid">
+      <div class="card space-card">
+        <div class="card-title">🌡️ 宇宙試練1: 熱的死 (Heat Death)</div>
+        <div class="card-body">
+          <p><strong>挑戦権:</strong> 10^(10^(10¹⁵)) TL</p>
+          <p style="margin-top:8px;"><strong>制限式:</strong></p>
+          <div class="formula-box">
+            GameSpeed_eff = (log₁₀²⁰(Score))^(1/5)^0.1
+          </div>
+          <p style="color:var(--text-tertiary); font-size:0.8rem;">
+            Score → 20重log₁₀ → 五乗根 → ^0.1<br>
+            スコアの増加がゲーム速度に対して極めて鈍化する。
+          </p>
+        </div>
+      </div>
+
+      <div class="card space-card">
+        <div class="card-title">⚡ SLS (Space Local Speed)</div>
+        <div class="card-body">
+          <p><strong>初期:</strong> GameSpeed^(-10)</p>
+          <p style="margin-top:6px;"><strong>最終:</strong> GameSpeed^(-0.1)</p>
+          <p style="margin-top:6px; color:var(--text-tertiary); font-size:0.8rem;">
+            宇宙試練クリアごとに緩和。<br>
+            最終的に指数の絶対値が1/100に。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">🎯 設計思想の変遷</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">序盤: テトリスゲーム</div>
+        <div class="card-body">
+          プレイヤーはブロックを操作し、ラインを消去してスコアを獲得。シンプルなアクションゲーム。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">中盤: 巨大数インクリメンタル</div>
+        <div class="card-body">
+          TL、SR、SLの3層構造で指数関数的成長を体験。アップグレードと周回の繰り返し。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">後半: プログラミングと言語進化</div>
+        <div class="card-body">
+          PythonからMalbolgeまで、言語の獲得と進化がゲームを加速。コードが力になる。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">終盤: 神格化</div>
+        <div class="card-body">
+          オリュンポス12神の力を借り、メリットとデメリットのバランスを取りながら試練に挑む。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">超終盤: 対数との戦い</div>
+        <div class="card-body">
+          天国と地獄の試練で、スコアと速度に対数を適用。対数そのものを操作する存在へ。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">最終: 宇宙と物理法則の攻略</div>
+        <div class="card-body">
+          熱的死、宇宙の終焉。プレイヤーは倍率ではなく、指数・対数・時間・宇宙・物理法則そのものを操作する。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Issues -->
+  <div id="issues" class="panel">
+    <div class="section-title">⚠️ 設計上の主要課題と提案</div>
+
+    <div class="issue-card">
+      <strong>1. 有限時間発散（TL指数システム）</strong>
+      <p>TL指数Lv100で獲得式が TL^6.0 となり、微分方程式 dTL/dt ∝ TL⁶ は有限時間で特異点（発散）を持つ。</p>
+      <em>提案: ソフトキャップを導入。例: TL⁶ → TL⁶/(1+TL²) または漸近線 y = TL⁶·tanh(TL⁻¹)</em>
+    </div>
+
+    <div class="issue-card">
+      <strong>2. 初期壁（テトリス→TL遷移）</strong>
+      <p>純粋なテトリスプレイで 10^(10⁹) Score に到達するには 10^(10⁹) 年規模が必要。現実的ではない。</p>
+      <em>提案: ステージ1内にプリステージ要素を追加。例: コンボ倍率（連鎖ごと×1.2）、パーフェクトクリア報酬（×10）、時間経過ボーナス。</em>
+    </div>
+
+    <div class="issue-card">
+      <strong>3. 言語システムの効果具体化</strong>
+      <p>「TL強化」「SL強化」等の効果が抽象的で、数値的な影響が不明確。</p>
+      <em>提案: 各言語ごとに具体的な数式を定義。Python=自動化+1/sec, C=ベース計算効率×2, Java=全指数+^0.01, Malbolge=自己改変で指数が時間と共に+^0.001/sec。</em>
+    </div>
+
+    <div class="issue-card">
+      <strong>4. 神の相性マトリクス未定義</strong>
+      <p>「相性が悪い神の強化は反転」とあるが、具体的な相性ペアと反転率が未定義。</p>
+      <em>提案: 12×12相性マトリクスを定義。ゼウス↔ポセイドン（兄弟対立 -50%）、アテナ↔アレス（戦術vs暴力 -30%）、ヘラ↔アフロディーテ（嫉妬 -40%）等。</em>
+    </div>
+
+    <div class="issue-card">
+      <strong>5. ログ適用の解釈統一</strong>
+      <p>「スコア獲得量へログ適用」の解釈が不明確。新リソースとして獲得するのか、乗算なのか。</p>
+      <em>提案: 新通貨として解釈。log₁₀(Score) → 「HeavenPoint」として獲得。地獄も同様に log₁₀₀(GameSpeed) → 「HellPoint」。</em>
+    </div>
+
+    <div class="issue-card">
+      <strong>6. 熱的死の計算コスト</strong>
+      <p>20重log₁₀の計算は再帰的でコストが高く、リアルタイム処理に向かない。</p>
+      <em>提案: 段階的計算＋キャッシュ戦略。または近似式: log₁₀²⁰(x) ≈ max(0, log₁₀²⁰(x)) をテーブル化。クールダウン付きの非同期更新も検討。</em>
+    </div>
+
+    <div class="section-title">📋 数値階層サマリー</div>
+    <div class="card" style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border-subtle);">
+            <th style="text-align:left; padding:10px; color:var(--accent-primary);">ステージ</th>
+            <th style="text-align:left; padding:10px; color:var(--accent-primary);">通貨</th>
+            <th style="text-align:left; padding:10px; color:var(--accent-primary);">規模（下限）</th>
+            <th style="text-align:left; padding:10px; color:var(--accent-primary);">規模（上限）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">テトリス</td>
+            <td style="padding:10px;">Score</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10⁰</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(10⁹)</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">TL</td>
+            <td style="padding:10px;">Transcendence</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(10⁹)</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(6.66×10¹⁶)</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">SR/SL</td>
+            <td style="padding:10px;">Soul</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(6.66×10¹⁶)</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(10²⁰)</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">言語</td>
+            <td style="padding:10px;">Code Power</td>
+            <td style="padding:10px;" colspan="2">指数強化層（乗算的ボーナス）</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">神</td>
+            <td style="padding:10px;">Divinity</td>
+            <td style="padding:10px;" colspan="2">試練60階層（メリット/デメリット制御）</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:10px;">天国/地獄</td>
+            <td style="padding:10px;">Logarithmic</td>
+            <td style="padding:10px;" colspan="2">対数操作層（log₁₀ → 5重log₁₀）</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;">スペース</td>
+            <td style="padding:10px;">Cosmic</td>
+            <td style="padding:10px; font-family:var(--font-mono);">10^(10^(10¹⁵))</td>
+            <td style="padding:10px; font-family:var(--font-mono);">∞</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
+<script>
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
